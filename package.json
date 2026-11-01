@@ -1,0 +1,17 @@
+{
+  "name": "runyth-cycle-emotes",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Development checks for Runyth Cycle Emotes, which adds an emoji button to the Token HUD for GM-configured wildcard emote image paths and posts the chosen image as a public chat message.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node tools/check.mjs && npm test && npm run build && npm run verify:release",
+    "build": "node tools/build.mjs",
+    "verify:release": "node tools/verify-release.mjs"
+  },
+  "engines": {
+    "node": ">=22.13.0 <27"
+  },
+  "license": "AGPL-3.0-or-later"
+}
