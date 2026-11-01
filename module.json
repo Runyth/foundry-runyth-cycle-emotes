@@ -1,22 +1,23 @@
 {
-  "id": "token-hud-emotes",
-  "title": "Token HUD Emotes",
+  "id": "runyth-cycle-emotes",
+  "title": "Runyth Cycle Emotes",
   "description": "Adds an emoji button to the Token HUD. Each actor can use a GM-configured wildcard emote-image path; selecting an emote posts it publicly to chat without changing token or actor artwork.",
   "version": "1.0.1",
-  "authors": [
-    {
-      "name": "Custom module generated for Foundry VTT v13"
-    }
-  ],
   "compatibility": {
     "minimum": "13",
     "verified": "13"
   },
-  "scripts": [
-    "scripts/token-hud-emotes.js"
+  "authors": [
+    {
+      "name": "Runyth",
+      "url": "https://github.com/Runyth"
+    }
+  ],
+  "esmodules": [
+    "scripts/runyth-cycle-emotes.mjs"
   ],
   "styles": [
-    "styles/token-hud-emotes.css"
+    "styles/runyth-cycle-emotes.css"
   ],
   "languages": [
     {
@@ -29,5 +30,11 @@
       "name": "Deutsch",
       "path": "lang/de.json"
     }
-  ]
+  ],
+  "license": "LICENSE",
+  "readme": "README.md",
+  "url": "https://github.com/Runyth/foundry-runyth-cycle-emotes",
+  "manifest": "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/latest/download/module.json",
+  "download": "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/download/v1.0.1/runyth-cycle-emotes-v1.0.1-mod.zip",
+  "changelog": "CHANGELOG.md"
 }

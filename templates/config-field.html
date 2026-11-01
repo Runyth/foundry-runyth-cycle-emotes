@@ -1,30 +1,30 @@
-<fieldset class="thci-config-fieldset">
-  <legend>{{localize "THCI.ConfigLegend"}}</legend>
+<fieldset class="rce-config-fieldset">
+  <legend>{{localize "RCE.ConfigLegend"}}</legend>
   <div class="form-group">
-    <label>{{localize "THCI.PatternLabel"}}</label>
-    <div class="form-fields thci-pattern-fields">
-      <button type="button" class="thci-folder-picker" data-tooltip="{{localize 'THCI.ChooseFolder'}}" aria-label="{{localize 'THCI.ChooseFolder'}}">
+    <label>{{localize "RCE.PatternLabel"}}</label>
+    <div class="form-fields rce-pattern-fields">
+      <button type="button" class="rce-folder-picker" data-tooltip="{{localize 'RCE.ChooseFolder'}}" aria-label="{{localize 'RCE.ChooseFolder'}}">
         <i class="fa-solid fa-folder-open"></i>
       </button>
       <input
-        class="thci-pattern-input"
+        class="rce-pattern-input"
         type="text"
-        name="flags.token-hud-emotes.pattern"
+        name="flags.runyth-cycle-emotes.pattern"
         value="{{pattern}}"
-        placeholder="{{localize 'THCI.PatternPlaceholder'}}"
+        placeholder="{{localize 'RCE.PatternPlaceholder'}}"
         autocomplete="off"
       />
-      <button type="button" class="thci-refresh" data-tooltip="{{localize 'THCI.Refresh'}}" aria-label="{{localize 'THCI.Refresh'}}">
+      <button type="button" class="rce-refresh" data-tooltip="{{localize 'RCE.Refresh'}}" aria-label="{{localize 'RCE.Refresh'}}">
         <i class="fa-solid fa-arrows-rotate"></i>
       </button>
       <input
-        class="thci-cache-input"
+        class="rce-cache-input"
         type="hidden"
-        name="flags.token-hud-emotes.cachedImages"
+        name="flags.runyth-cycle-emotes.cachedImages"
         value="{{cachedImages}}"
       />
     </div>
-    <p class="hint">{{localize "THCI.PatternHint"}}</p>
-    <p class="thci-config-status" aria-live="polite"></p>
+    <p class="hint">{{localize "RCE.PatternHint"}}</p>
+    <p class="rce-config-status" aria-live="polite"></p>
   </div>
 </fieldset>

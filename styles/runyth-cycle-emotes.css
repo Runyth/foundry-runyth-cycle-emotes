@@ -1,9 +1,9 @@
-#token-hud .thci-hud-control {
+#token-hud .rce-hud-control {
   position: relative;
   font-size: 0;
 }
 
-#token-hud .thci-hud-emoji {
+#token-hud .rce-hud-emoji {
   display: inline-flex;
   width: 36px;
   height: 36px;
@@ -14,7 +14,7 @@
   filter: none;
 }
 
-#token-hud .thci-selector-wrap {
+#token-hud .rce-selector-wrap {
   position: absolute;
   left: 50px;
   top: 50%;
@@ -34,11 +34,11 @@
   z-index: 100;
 }
 
-#token-hud .thci-selector-wrap.active {
+#token-hud .rce-selector-wrap.active {
   visibility: visible;
 }
 
-#token-hud .thci-image-button {
+#token-hud .rce-image-button {
   width: 100px;
   height: 100px;
   margin: 0;
@@ -50,13 +50,13 @@
   overflow: hidden;
 }
 
-#token-hud .thci-image-button:hover,
-#token-hud .thci-image-button:focus-visible {
+#token-hud .rce-image-button:hover,
+#token-hud .rce-image-button:focus-visible {
   border-color: var(--control-hover-border-color, #ff6400);
   outline: none;
 }
 
-#token-hud .thci-image-button img {
+#token-hud .rce-image-button img {
   display: block;
   width: 100%;
   height: 100%;
@@ -67,53 +67,53 @@
   filter: none;
 }
 
-#token-hud .thci-image-button:hover img,
-#token-hud .thci-image-button:focus-visible img {
+#token-hud .rce-image-button:hover img,
+#token-hud .rce-image-button:focus-visible img {
   opacity: 1;
 }
 
-.token-sheet .thci-config-fieldset {
+.token-sheet .rce-config-fieldset {
   margin-top: 0.75rem;
 }
 
-.token-sheet .thci-pattern-fields {
+.token-sheet .rce-pattern-fields {
   display: flex;
   gap: 0.25rem;
   align-items: center;
 }
 
-.token-sheet .thci-pattern-input {
+.token-sheet .rce-pattern-input {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.token-sheet .thci-folder-picker,
-.token-sheet .thci-refresh {
+.token-sheet .rce-folder-picker,
+.token-sheet .rce-refresh {
   flex: 0 0 var(--input-height, 32px);
   width: var(--input-height, 32px);
   height: var(--input-height, 32px);
   padding: 0;
 }
 
-.token-sheet .thci-config-status {
+.token-sheet .rce-config-status {
   min-height: 1.2em;
   margin: 0.25rem 0 0;
   font-size: var(--font-size-12, 12px);
   opacity: 0.85;
 }
 
-.token-sheet .thci-config-status.thci-error {
+.token-sheet .rce-config-status.rce-error {
   color: var(--color-level-error, #d33);
 }
 
-.chat-message .thci-chat-card {
+.chat-message .rce-chat-card {
   width: 100%;
   margin: 0;
   padding: 0;
   text-align: center;
 }
 
-.chat-message .thci-chat-image {
+.chat-message .rce-chat-image {
   display: block;
   width: 100%;
   max-width: 100%;
