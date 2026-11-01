@@ -1,0 +1,10 @@
+<div class="control-icon thci-hud-control" data-action="thci-selector" data-tooltip="{{localize 'THCI.Title'}}" aria-label="{{localize 'THCI.Title'}}">
+  <span class="thci-hud-emoji" aria-hidden="true">🎭</span>
+  <div class="thci-selector-wrap" role="menu">
+    {{#each images as |image index|}}
+      <button type="button" class="thci-image-button" data-index="{{index}}" data-tooltip="{{image.name}}" aria-label="{{image.name}}" role="menuitem">
+        <img src="{{image.route}}" alt="{{image.name}}" loading="lazy" />
+      </button>
+    {{/each}}
+  </div>
+</div>

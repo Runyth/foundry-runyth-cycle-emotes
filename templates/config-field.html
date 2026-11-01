@@ -1,0 +1,30 @@
+<fieldset class="thci-config-fieldset">
+  <legend>{{localize "THCI.ConfigLegend"}}</legend>
+  <div class="form-group">
+    <label>{{localize "THCI.PatternLabel"}}</label>
+    <div class="form-fields thci-pattern-fields">
+      <button type="button" class="thci-folder-picker" data-tooltip="{{localize 'THCI.ChooseFolder'}}" aria-label="{{localize 'THCI.ChooseFolder'}}">
+        <i class="fa-solid fa-folder-open"></i>
+      </button>
+      <input
+        class="thci-pattern-input"
+        type="text"
+        name="flags.token-hud-emotes.pattern"
+        value="{{pattern}}"
+        placeholder="{{localize 'THCI.PatternPlaceholder'}}"
+        autocomplete="off"
+      />
+      <button type="button" class="thci-refresh" data-tooltip="{{localize 'THCI.Refresh'}}" aria-label="{{localize 'THCI.Refresh'}}">
+        <i class="fa-solid fa-arrows-rotate"></i>
+      </button>
+      <input
+        class="thci-cache-input"
+        type="hidden"
+        name="flags.token-hud-emotes.cachedImages"
+        value="{{cachedImages}}"
+      />
+    </div>
+    <p class="hint">{{localize "THCI.PatternHint"}}</p>
+    <p class="thci-config-status" aria-live="polite"></p>
+  </div>
+</fieldset>

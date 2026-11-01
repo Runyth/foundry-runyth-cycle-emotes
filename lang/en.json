@@ -1,0 +1,17 @@
+{
+  "THCI.Title": "Emotes",
+  "THCI.ConfigLegend": "Token HUD Emotes",
+  "THCI.PatternLabel": "Emote image wildcard path",
+  "THCI.PatternHint": "Choose a folder or enter a wildcard path such as tokens/emotes/Hero_* . Only matching image files are shown in the Token HUD Emotes menu. Token and actor artwork are never changed.",
+  "THCI.PatternPlaceholder": "tokens/emotes/Hero_*",
+  "THCI.ChooseFolder": "Choose image folder",
+  "THCI.Refresh": "Refresh image list",
+  "THCI.ImagesFound": "{count} matching image(s) found.",
+  "THCI.NoImagesFound": "No matching images found.",
+  "THCI.PathError": "Could not read this image path. Check the wildcard and file permissions.",
+  "THCI.NoPattern": "No emote-image path configured for this actor.",
+  "THCI.SendToChat": "Send emote to chat",
+  "THCI.ChatAlt": "Emote from {name}",
+  "THCI.BrowseDeniedCache": "Live file browsing is unavailable; using the GM-saved image list.",
+  "THCI.PostError": "The image could not be posted to chat."
+}

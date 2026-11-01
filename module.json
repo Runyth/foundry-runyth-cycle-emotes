@@ -1,0 +1,33 @@
+{
+  "id": "token-hud-emotes",
+  "title": "Token HUD Emotes",
+  "description": "Adds an emoji button to the Token HUD. Each actor can use a GM-configured wildcard emote-image path; selecting an emote posts it publicly to chat without changing token or actor artwork.",
+  "version": "1.0.1",
+  "authors": [
+    {
+      "name": "Custom module generated for Foundry VTT v13"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "scripts": [
+    "scripts/token-hud-emotes.js"
+  ],
+  "styles": [
+    "styles/token-hud-emotes.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ]
+}
