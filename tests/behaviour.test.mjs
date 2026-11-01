@@ -41,11 +41,15 @@ test("file locator wildcard browse invocation contract", async () => {
 
 test("cache serialisation and parsing used when player file permissions are restricted", () => {
   const cached = [
-    { route: "tokens/emotes/Hero_happy.webp", name: "Hero_happy.webp" },
-    { route: "tokens/emotes/Hero_angry.png", name: "Hero_angry.png" }
+    { route: "tokens/emotes/Hero_angry.png", name: "Hero_angry.png" },
+    { route: "tokens/emotes/Hero_happy.webp", name: "Hero_happy.webp" }
   ];
   const serialized = api.serializeCachedImages(cached);
   assert.deepEqual(api.parseCachedImages(serialized).map((r) => r.route), cached.map((r) => r.route));
+  assert.deepEqual(
+    api.parseCachedImages(JSON.stringify(["tokens/emotes/Hero_happy.webp", "tokens/emotes/Hero_angry.png"])).map((r) => r.route),
+    ["tokens/emotes/Hero_angry.png", "tokens/emotes/Hero_happy.webp"]
+  );
 });
 
 test("live resolution and player cache fallback", async () => {

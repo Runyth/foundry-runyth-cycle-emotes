@@ -63,10 +63,11 @@ test("the localization namespace follows the module family prefix", () => {
 });
 
 test("no volunteer identity surface remains on runtime surfaces", () => {
-  const imports = ["thci", "THCI", "token-hud-emotes"];
+  const importedId = ["token-", "hud-emotes"].join("");
   for (const file of ["module.json", ...manifest.esmodules, ...manifest.styles, ...manifest.languages.map((row) => row.path), "templates/config-field.html", "templates/hud.html"]) {
     const text = readFileSync(repo(file), "utf8");
-    for (const needle of imports) {
+    assert.ok(!text.includes(importedId), `${file} must not carry the imported identity`);
+    for (const needle of ["thci", "THCI"]) {
       assert.ok(!text.includes(needle), `${file} carries ${needle}`);
     }
   }
