@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Daniel Braniewski. See the LICENSE file for rights and obligations.
+// Dependency-free validation for Runyth Cycle Emotes.
+import { accessSync, readdirSync, readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import process from "node:process";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const manifest = JSON.parse(await readFile(path.join(root, "module.json"), "utf8"));
+const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+const packageLock = JSON.parse(await readFile(path.join(root, "package-lock.json"), "utf8"));
+
+function assert(condition, message) {
+  if (!condition) {
+    process.stderr.write(`Check failed: ${message}\n`);
+    process.exit(1);
+  }
+}
+
+const version = manifest.version;
+assert(manifest.id === "runyth-cycle-emotes", "manifest id");
+assert(manifest.title === "Runyth Cycle Emotes", "manifest title");
+assert(manifest.license === "LICENSE", "manifest licence field");
+assert(manifest.url === "https://github.com/Runyth/foundry-runyth-cycle-emotes", "manifest url");
+assert(manifest.manifest === "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/latest/download/module.json", "manifest URL");
+assert(
+  manifest.download === `https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/download/v${version}/runyth-cycle-emotes-v${version}-mod.zip`,
+  "manifest download URL"
+);
+assert(manifest.authors.length === 1, "manifest must carry exactly one author");
+assert(manifest.authors[0].name === "Runyth", "manifest author organisation");
+assert(manifest.authors[0].url === "https://github.com/Runyth", "manifest author URL");
+assert(manifest.compatibility.minimum === "13", "Foundry minimum pin");
+assert(!(manifest.relationships?.requires?.length), "the module declares no required modules");
+
+assert(packageJson.name === manifest.id, "package name");
+assert(packageJson.version === version, "package version");
+assert(packageJson.license === "AGPL-3.0-or-later", "package licence");
+assert(packageLock.packages?.[""]?.version === version, "package-lock root version");
+assert(packageLock.packages?.[""]?.license === "AGPL-3.0-or-later", "package-lock root licence");
+
+const requiredFiles = [
+  "module.json",
+  "package.json",
+  "package-lock.json",
+  "LICENSE",
+  "README.md",
+  "CHANGELOG.md",
+  "CONTRIBUTING.md",
+  "SECURITY.md",
+  "templates/config-field.html",
+  "templates/hud.html",
+  ...manifest.esmodules,
+  ...(manifest.styles ?? []),
+  ...((manifest.languages ?? []).map((entry) => entry.path))
+];
+for (const relativePath of requiredFiles) {
+  accessSync(path.join(root, relativePath));
+}
+
+for (const script of manifest.esmodules) {
+  const result = spawnSync(process.execPath, ["--check", path.join(root, script)], {
+    cwd: root,
+    encoding: "utf8"
+  });
+  if (result.status !== 0) {
+    process.stderr.write(result.stderr);
+    process.exit(result.status ?? 1);
+  }
+}
+
+console.log(`Validated ${requiredFiles.length} required files and ${manifest.esmodules.length} module scripts.`);
