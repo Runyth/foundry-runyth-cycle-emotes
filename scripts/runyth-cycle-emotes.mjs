@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Daniel Braniewski. See the LICENSE file for rights and obligations.
 const MODULE_ID = "runyth-cycle-emotes";
 const FLAG_PATTERN = "pattern";
 const FLAG_CACHE = "cachedImages";
