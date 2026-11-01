@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Daniel Braniewski. See the LICENSE file for rights and obligations.
 // Dependency-free validation for Runyth Cycle Emotes.
-import { accessSync, readdirSync, readFile } from "node:fs/promises";
+import { accessSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(path.join(root, "module.json"), "utf8"));
-const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
-const packageLock = JSON.parse(await readFile(path.join(root, "package-lock.json"), "utf8"));
+const manifest = JSON.parse(readFileSync(path.join(root, "module.json"), "utf8"));
+const packageJson = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
+const packageLock = JSON.parse(readFileSync(path.join(root, "package-lock.json"), "utf8"));
 
 function assert(condition, message) {
   if (!condition) {
