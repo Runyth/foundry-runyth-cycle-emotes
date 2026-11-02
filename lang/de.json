@@ -1,8 +1,8 @@
 {
   "RCE.Title": "Emotes",
-  "RCE.ConfigLegend": "Token HUD Emotes",
+  "RCE.ConfigLegend": "Runyth Cycle Emote",
   "RCE.PatternLabel": "Emote-Bild-Wildcard-Pfad",
-  "RCE.PatternHint": "Wähle einen Ordner oder trage einen Wildcard-Pfad wie tokens/emotes/Held_* ein. Nur passende Bilddateien erscheinen im Token-HUD-Emote-Menü. Token- und Charakterbild werden niemals verändert.",
+  "RCE.PatternHint": "Wähle einen Ordner oder trage einen Wildcard-Pfad wie tokens/emotes/Held_* ein. Nur passende Bilddateien erscheinen im Auswahlmenü von Runyth Cycle Emote. Token- und Charakterbild werden niemals verändert.",
   "RCE.PatternPlaceholder": "tokens/emotes/Held_*",
   "RCE.ChooseFolder": "Bildordner auswählen",
   "RCE.Refresh": "Bildliste aktualisieren",

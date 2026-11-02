@@ -1,8 +1,8 @@
 {
   "RCE.Title": "Emotes",
-  "RCE.ConfigLegend": "Token HUD Emotes",
+  "RCE.ConfigLegend": "Runyth Cycle Emote",
   "RCE.PatternLabel": "Emote image wildcard path",
-  "RCE.PatternHint": "Choose a folder or enter a wildcard path such as tokens/emotes/Hero_* . Only matching image files are shown in the Token HUD Emotes menu. Token and actor artwork are never changed.",
+  "RCE.PatternHint": "Choose a folder or enter a wildcard path such as tokens/emotes/Hero_* . Only matching image files are shown in the Runyth Cycle Emote selector. Token and actor artwork are never changed.",
   "RCE.PatternPlaceholder": "tokens/emotes/Hero_*",
   "RCE.ChooseFolder": "Choose image folder",
   "RCE.Refresh": "Refresh image list",
