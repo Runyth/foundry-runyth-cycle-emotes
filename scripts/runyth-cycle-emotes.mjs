@@ -5,6 +5,8 @@ const FLAG_PATTERN = "pattern";
 const FLAG_CACHE = "cachedImages";
 const CONFIG_TEMPLATE = `/modules/${MODULE_ID}/templates/config-field.html`;
 const HUD_TEMPLATE = `/modules/${MODULE_ID}/templates/hud.html`;
+const CYCLE_TOKEN_SECTION = "fieldset.runyth-cycle-token-config";
+const RCE_SECTION = ".rce-config-fieldset";
 const IMAGE_EXTENSION = /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i;
 const WILDCARD_CHARACTER = /[*?{}\[\]]/;
 
@@ -201,21 +203,48 @@ async function updateConfigPreview(root, patternInput, cacheInput, status) {
   }
 }
 
+/**
+ * Keep this section ordered beside Runyth Cycle Token: when the sibling module
+ * rendered its own Appearance fieldset, the emote section sits directly below,
+ * regardless of which module dispatched first. Only our fieldset is moved;
+ * the sibling section is never touched.
+ */
+function placeBelowCycleToken(appearanceTab, rceFieldset) {
+  if (!appearanceTab || !rceFieldset) return;
+  const tokenSection = appearanceTab.querySelector(CYCLE_TOKEN_SECTION);
+  if (!tokenSection || tokenSection.parentElement !== rceFieldset.parentElement) return;
+  if (tokenSection.nextElementSibling === rceFieldset) return;
+  tokenSection.insertAdjacentElement("afterend", rceFieldset);
+}
+
 async function renderPrototypeTokenConfig(config, html) {
   if (!globalThis.game?.user?.isGM) return;
   const root = getRootElement(html);
-  if (!root || root.querySelector(".rce-config-fieldset")) return;
+  if (!root) return;
 
   const appearanceTab = root.querySelector('.tab[data-tab="appearance"], .tab[data-tab="image"]');
   if (!appearanceTab) return;
+
+  const existing = root.querySelector(RCE_SECTION);
+  if (existing) {
+    placeBelowCycleToken(appearanceTab, existing);
+    return;
+  }
 
   const tokenDocument = config?.token ?? config?.document ?? null;
   const pattern = getFlag(tokenDocument, FLAG_PATTERN) || "";
   const cachedImages = getFlag(tokenDocument, FLAG_CACHE) || "[]";
   const fieldHTML = await renderTemplate(CONFIG_TEMPLATE, { pattern, cachedImages });
-  appearanceTab.insertAdjacentHTML("beforeend", fieldHTML);
+  const tokenSection = appearanceTab.querySelector(CYCLE_TOKEN_SECTION);
+  if (tokenSection) tokenSection.insertAdjacentHTML("afterend", fieldHTML);
+  else appearanceTab.insertAdjacentHTML("beforeend", fieldHTML);
 
-  const fieldset = appearanceTab.querySelector(".rce-config-fieldset");
+  const fieldset = appearanceTab.querySelector(RCE_SECTION);
+  // The sibling module may subscribe after us; one bounded reconciliation after
+  // the synchronous render dispatch covers that order.
+  const reconcile = () => placeBelowCycleToken(appearanceTab, appearanceTab.querySelector(RCE_SECTION));
+  reconcile();
+  globalThis.queueMicrotask?.(reconcile);
   const patternInput = fieldset?.querySelector(".rce-pattern-input");
   const cacheInput = fieldset?.querySelector(".rce-cache-input");
   const status = fieldset?.querySelector(".rce-config-status");

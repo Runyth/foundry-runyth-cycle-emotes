@@ -18,8 +18,10 @@ targeting **Foundry VTT v13**.
 - Clicking a thumbnail posts **only that image** as a normal public Chat Message visible
   to all connected players and the Game Master.
 - It **never changes** the placed Token image, Prototype Token image, or Actor portrait.
-- Adds a dedicated **Runyth Cycle Emotes** section to **Prototype Token Configuration →
-  Appearance** for the Game Master.
+- Adds a dedicated **Runyth Cycle Emote** section to **Prototype Token Configuration →
+  Appearance** for the Game Master. When **Runyth Cycle Token** is installed, the
+  section appears directly below the Runyth Cycle Token section, regardless of
+  module load order.
 - Supports Foundry-style wildcard paths, for example:
   - `tokens/emotes/Hero_*`
   - `tokens/emotes/Hero_*.webp`
@@ -48,7 +50,7 @@ targeting **Foundry VTT v13**.
 1. Open an Actor.
 2. Open **Prototype Token** configuration.
 3. Open **Appearance**.
-4. Find **Runyth Cycle Emotes**.
+4. Find **Runyth Cycle Emote**.
 5. Use the folder button or type a wildcard path, e.g. `tokens/emotes/Aria_*`.
 6. Use the refresh button to verify the number of matching images.
 7. Save the Prototype Token configuration.
