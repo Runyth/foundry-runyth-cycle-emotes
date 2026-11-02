@@ -50,8 +50,10 @@ test("the README quotes the standard licence chapter", () => {
   assert.ok(readme.includes("<https://www.gnu.org/licenses/>"));
 });
 
-test("the changelog carries the 1.0.1 release section", () => {
-  assert.ok(read("CHANGELOG.md").includes("## 1.0.1 — 2026-11-01"));
+test("the changelog carries the 1.0.1 and 1.0.2 release sections", () => {
+  const changelog = read("CHANGELOG.md");
+  assert.ok(changelog.includes("## 1.0.1 — 2026-11-01"));
+  assert.ok(changelog.includes("## 1.0.2 — 2026-11-02"));
 });
 
 test("published surfaces name no imported identity and no foreign project", () => {
