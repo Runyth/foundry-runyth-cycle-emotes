@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.2 — 2026-11-02
+
+- The section in **Prototype Token Configuration → Appearance** now reads
+  **Runyth Cycle Emote** in English and German, matching the naming of the
+  Runyth Cycle Token section; the wildcard path hint no longer names the
+  former menu title.
+- When **Runyth Cycle Token** is installed, the Runyth Cycle Emote section
+  always appears directly below the Runyth Cycle Token section in the
+  Appearance tab, regardless of which module is loaded first. Only the
+  emote section is ever moved; when Cycle Token is absent the placement is
+  unchanged.
+- Behaviour is otherwise unchanged: the emoji gallery on the Token HUD, the
+  GM-configured wildcard emote image paths, the cached-image fallback for
+  players with restricted file locator permission, public chat posting, and
+  the guarantee that token and actor artwork are never rewritten.
+
 ## 1.0.1 — 2026-11-01
 
 - First Runyth release, published as `runyth-cycle-emotes` / **Runyth Cycle Emotes**.
