@@ -124,3 +124,170 @@ test("static guard: the module source writes no artwork fields", () => {
   assert.doesNotMatch(executable, /actor\.img\s*=/);
   assert.doesNotMatch(executable, /token\.document\.update\s*\(/);
 });
+
+/* A minimal DOM sufficient for the Prototype Token Appearance section paths:
+   comma-separated selectors of tag, .class and [attr="value"] parts. */
+function parseAttributeList(raw) {
+  const attributes = {};
+  for (const [, name, value] of raw.matchAll(/([a-zA-Z-]+)(?:="([^"]*)")?/g)) {
+    attributes[name] = value ?? "";
+  }
+  return attributes;
+}
+
+function attachElement(parent, piece) {
+  parent.children.push(piece);
+  piece.parentElement = parent;
+}
+
+function miniDom(tag, attributes = {}) {
+  const element = {
+    tag,
+    attributes,
+    classes: String(attributes.class ?? "").split(/\s+/).filter(Boolean),
+    children: [],
+    parentElement: null,
+    addEventListener() {},
+    setAttribute() {},
+    removeAttribute() {},
+    appendChild(child) {
+      attachElement(element, child);
+      return child;
+    },
+    insertAdjacentElement(position, target) {
+      if (!element.parentElement) return target;
+      const siblings = element.parentElement.children;
+      if (position === "afterend") siblings.splice(siblings.indexOf(element) + 1, 0, target);
+      else siblings.splice(siblings.indexOf(element), 0, target);
+      target.parentElement = element.parentElement;
+      return target;
+    },
+    insertAdjacentHTML(position, html) {
+      for (const piece of parseHtmlFragment(html)) {
+        if (position === "afterend" && element.parentElement) {
+          const siblings = element.parentElement.children;
+          siblings.splice(siblings.indexOf(element) + 1, 0, piece);
+          piece.parentElement = element.parentElement;
+        } else {
+          attachElement(element, piece);
+        }
+      }
+    },
+    get nextElementSibling() {
+      if (!element.parentElement) return null;
+      const siblings = element.parentElement.children;
+      return siblings[siblings.indexOf(element) + 1] ?? null;
+    },
+    querySelectorAll(selector) {
+      return [...descendants(element)].filter(node => matchesSelector(node, selector));
+    },
+    querySelector(selector) {
+      return element.querySelectorAll(selector)[0] ?? null;
+    }
+  };
+  return element;
+}
+
+function* descendants(element) {
+  for (const child of element.children) {
+    yield child;
+    yield* descendants(child);
+  }
+}
+
+function matchesSelector(node, selector) {
+  return selector.split(",").some(part => {
+    const trimmed = part.trim();
+    const tagMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9]*)[\s.[]/);
+    if (tagMatch && node.tag !== tagMatch[1]) return false;
+    for (const className of trimmed.match(/\.([a-zA-Z0-9_-]+)/g) ?? []) {
+      if (!node.classes.includes(className.slice(1))) return false;
+    }
+    for (const [, name, value] of trimmed.matchAll(/\[([a-zA-Z-]+)(?:="([^"]*)")?\]/g)) {
+      if (node.attributes[name] !== (value ?? "")) return false;
+    }
+    return Boolean(tagMatch || /\.|\[/.test(trimmed));
+  });
+}
+
+function parseHtmlFragment(html) {
+  const roots = [];
+  const stack = [];
+  for (const match of html.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)((?:\s+[a-zA-Z-]+(?:="[^"]*")?)*)(\/?)>/g)) {
+    const [full, closing, tag, rawAttributes] = match;
+    if (closing) {
+      stack.pop();
+      continue;
+    }
+    const parent = stack.at(-1) ?? null;
+    const element = miniDom(tag, parseAttributeList(rawAttributes));
+    if (parent) attachElement(parent, element);
+    else roots.push(element);
+    if (!full.endsWith("/>")) stack.push(element);
+  }
+  return roots;
+}
+
+const FIELD_HTML = '<fieldset class="rce-config-fieldset"><div class="form-fields"><input class="rce-pattern-input"></input><input class="rce-cache-input"></input></div></fieldset>';
+
+function configEnvironment() {
+  const appearance = miniDom("div", { class: "tab", "data-tab": "appearance" });
+  const root = miniDom("div", { class: "window-content" });
+  root.appendChild(appearance);
+  const config = { token: { getFlag: () => undefined } };
+  globalThis.game = { user: { isGM: true } };
+  globalThis.renderTemplate = async () => FIELD_HTML;
+  return { root, appearance, config };
+}
+
+function addTokenSection(appearance) {
+  const tokenField = miniDom("fieldset", { class: "runyth-cycle-token-config" });
+  tokenField.appendChild(miniDom("div", { class: "token-legend" }));
+  appearance.appendChild(tokenField);
+  return tokenField;
+}
+
+const tokenSectionOf = (panel) => panel.querySelector("fieldset.runyth-cycle-token-config");
+const emoteSectionOf = (panel) => panel.querySelector(".rce-config-fieldset");
+const flushRenderQueue = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+test("with Cycle Token present, the emote section is inserted directly below it", async () => {
+  const { root, appearance, config } = configEnvironment();
+  const tokenField = addTokenSection(appearance);
+  await api.renderPrototypeTokenConfig(config, root);
+  assert.equal(tokenField.nextElementSibling, emoteSectionOf(appearance));
+  assert.equal(emoteSectionOf(appearance).nextElementSibling, null);
+  assert.deepEqual([...appearance.children].map(node => node.classes[0]), ["runyth-cycle-token-config", "rce-config-fieldset"]);
+});
+
+test("when the sibling module dispatches later, the reconciler moves the emote section below it", async () => {
+  const { root, appearance, config } = configEnvironment();
+  const render = api.renderPrototypeTokenConfig(config, root);
+  addTokenSection(appearance);
+  await render;
+  await flushRenderQueue();
+  assert.equal(tokenSectionOf(appearance).nextElementSibling, emoteSectionOf(appearance));
+  assert.equal(appearance.children.length, 2);
+});
+
+test("without Cycle Token, the emote section keeps its appended, independent placement", async () => {
+  const { root, appearance, config } = configEnvironment();
+  await api.renderPrototypeTokenConfig(config, root);
+  assert.ok(emoteSectionOf(appearance));
+  assert.ok(!tokenSectionOf(appearance));
+  assert.equal(appearance.children.at(-1), emoteSectionOf(appearance));
+});
+
+test("repeated renders are idempotent: one section only, order still below Cycle Token", async () => {
+  const { root, appearance, config } = configEnvironment();
+  await api.renderPrototypeTokenConfig(config, root);
+  const emotes = emoteSectionOf(appearance);
+  await api.renderPrototypeTokenConfig(config, root);
+  assert.equal(appearance.querySelectorAll(".rce-config-fieldset").length, 1);
+  assert.equal(emoteSectionOf(appearance), emotes);
+  assert.equal(appearance.children.at(-1), emotes);
+  addTokenSection(appearance);
+  await api.renderPrototypeTokenConfig(config, root);
+  await flushRenderQueue();
+  assert.equal(tokenSectionOf(appearance).nextElementSibling, emoteSectionOf(appearance));
+});
