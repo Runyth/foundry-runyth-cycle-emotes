@@ -78,7 +78,7 @@ test("hook registration mirrors the Foundry v13 lifecycle", () => {
   assert.equal(registered.once.length, 1);
   assert.equal(registered.once[0][0], "init");
   registered.once[0][1]();
-  assert.deepEqual(registered.on.map(([name]) => name).sort(), ["renderPrototypeTokenConfig", "renderTokenHUD"]);
+  assert.deepEqual(registered.on.map(([name]) => name).sort(), ["canvasTearDown", "renderPrototypeTokenConfig", "renderTokenHUD"]);
 });
 
 test("chat content contains the selected image and no artwork references", () => {
@@ -150,12 +150,29 @@ function miniDom(tag, attributes = {}) {
     addEventListener() {},
     setAttribute() {},
     removeAttribute() {},
+    get dataset() {
+      const self = element;
+      const kebab = property => "data-" + String(property).replace(/[A-Z]/g, c => "-" + c.toLowerCase());
+      return new Proxy({}, {
+        get: (_target, property) => self.attributes[kebab(property)] ?? "",
+        set: (_target, property, value) => { self.attributes[kebab(property)] = value; return true; }
+      });
+    },
     appendChild(child) {
       attachElement(element, child);
       return child;
     },
     insertAdjacentElement(position, target) {
-      if (!element.parentElement) return target;
+      // A real DOM moves the node: detach it from wherever it currently lives first.
+      const origin = target.parentElement;
+      if (origin) {
+        const at = origin.children.indexOf(target);
+        if (at >= 0) origin.children.splice(at, 1);
+      }
+      if (!element.parentElement) {
+        attachElement(element, target);
+        return target;
+      }
       const siblings = element.parentElement.children;
       if (position === "afterend") siblings.splice(siblings.indexOf(element) + 1, 0, target);
       else siblings.splice(siblings.indexOf(element), 0, target);
@@ -200,13 +217,14 @@ function matchesSelector(node, selector) {
     const trimmed = part.trim();
     const tagMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9]*)[\s.[]/);
     if (tagMatch && node.tag !== tagMatch[1]) return false;
-    for (const className of trimmed.match(/\.([a-zA-Z0-9_-]+)/g) ?? []) {
+    const quoted = trimmed.replace(/"[^"]*"/g, '""');
+    for (const className of quoted.match(/\.([a-zA-Z0-9_-]+)/g) ?? []) {
       if (!node.classes.includes(className.slice(1))) return false;
     }
     for (const [, name, value] of trimmed.matchAll(/\[([a-zA-Z-]+)(?:="([^"]*)")?\]/g)) {
       if (node.attributes[name] !== (value ?? "")) return false;
     }
-    return Boolean(tagMatch || /\.|\[/.test(trimmed));
+    return Boolean(tagMatch || /\.|\[/.test(quoted));
   });
 }
 
@@ -290,4 +308,116 @@ test("repeated renders are idempotent: one section only, order still below Cycle
   await api.renderPrototypeTokenConfig(config, root);
   await flushRenderQueue();
   assert.equal(tokenSectionOf(appearance).nextElementSibling, emoteSectionOf(appearance));
+});
+
+/* --- Token HUD ordering contract -----------------------------------------
+   Runyth Cycle Portrait (active) outranks Runyth Cycle Token; the emote
+   control sits directly below the highest-ranked rendered sibling. Siblings
+   are located by module-id markers, never by artwork. */
+
+const HUD_HTML = '<div class="control-icon rce-hud-control" data-action="rce-selector" data-tooltip="RCE.Title"><div class="rce-selector-wrap"></div><button type="button" class="rce-image-button" data-index="0" data-tooltip="Hero_happy.webp" aria-label="Hero_happy.webp"></button></div>';
+
+function hudEnvironment({ portrait = null, token = null } = {}) {
+  const right = miniDom("div", { class: "col right" });
+  const root = miniDom("div", { class: "token-hud" });
+  root.appendChild(right);
+  const tokenDoc = { getFlag: (_m, key) => key === "pattern" ? "tokens/emotes/*" : undefined };
+  const app = { object: { document: tokenDoc, actor: { prototypeToken: tokenDoc } } };
+  globalThis.game = {
+    modules: {
+      get: id => ({ active: id === portrait || id === token ? true : false })
+    },
+    user: { isGM: true }
+  };
+  globalThis.renderTemplate = async () => HUD_HTML;
+  globalThis.FilePicker = { browse: async () => ({ files: ["tokens/emotes/Hero_happy.webp"] }) };
+  return { root, right, app };
+}
+
+function makeTokenHudButton() {
+  const button = miniDom("button", { class: "control-icon runyth-cycle-token-hud" });
+  button.appendChild(miniDom("span", { class: "rct-hud-emoji" }));
+  return button;
+}
+
+function makePortraitHudButton() {
+  const button = miniDom("button", { class: "control-icon rcp-hud-button", "data-module": "runyth-cycle-portrait" });
+  button.appendChild(miniDom("span", { class: "rcp-hud-emoji" }));
+  return button;
+}
+
+const emoteHudControl = panel => panel.querySelector('[data-action="rce-selector"]');
+const classesByKey = panel => [...panel.children].map(node => node.attributes["data-module"] ?? node.classes[1] ?? node.classes[0]);
+
+test("HUD: with Portrait and Token active, the control lands directly below Portrait", async () => {
+  const { root, right, app } = hudEnvironment({ portrait: "runyth-cycle-portrait", token: "runyth-cycle-token" });
+  right.appendChild(makeTokenHudButton());
+  right.appendChild(makePortraitHudButton());
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-token-hud", "runyth-cycle-portrait", "runyth-cycle-emotes"]);
+  assert.equal(classesByKey(right).at(-1), "runyth-cycle-emotes");
+  assert.equal(right.children[1].nextElementSibling, emoteHudControl(right));
+});
+
+test("HUD: with only Token active, the control lands directly below Token", async () => {
+  const { root, right, app } = hudEnvironment({ token: "runyth-cycle-token" });
+  right.appendChild(makeTokenHudButton());
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-token-hud", "runyth-cycle-emotes"]);
+});
+
+test("HUD: a Portrait control without an active module never outranks Token", async () => {
+  const { root, right, app } = hudEnvironment({ token: "runyth-cycle-token" });
+  right.appendChild(makeTokenHudButton());
+  right.appendChild(makePortraitHudButton());
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-token-hud", "runyth-cycle-emotes", "runyth-cycle-portrait"]);
+});
+
+test("HUD: without active siblings the control keeps its independent appended place", async () => {
+  const { root, right, app } = hudEnvironment();
+  right.appendChild(miniDom("button", { class: "control-icon unrelated-sibling" }));
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.deepEqual(classesByKey(right), ["unrelated-sibling", "runyth-cycle-emotes"]);
+});
+
+test("HUD: siblings that arrive after our control are caught by the reconciliation", async () => {
+  const { root, right, app } = hudEnvironment({ portrait: "runyth-cycle-portrait", token: "runyth-cycle-token" });
+  const render = api.renderTokenHUD(app, root);
+  right.appendChild(makePortraitHudButton());
+  right.appendChild(makeTokenHudButton());
+  await render;
+  await flushRenderQueue();
+  // Our invariant: directly below the highest-ranked active sibling. The mutual
+  // Token-vs-Portrait order is Cycle Token's own hud-order job, never ours.
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-portrait", "runyth-cycle-emotes", "runyth-cycle-token-hud"]);
+  assert.equal(right.children[0].nextElementSibling, emoteHudControl(right));
+});
+
+test("HUD: a sibling in another column is never adopted across parents", async () => {
+  const { root, right, app } = hudEnvironment({ portrait: "runyth-cycle-portrait", token: "runyth-cycle-token" });
+  const left = miniDom("div", { class: "col left" });
+  root.appendChild(left);
+  left.appendChild(makePortraitHudButton());
+  right.appendChild(makeTokenHudButton());
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-token-hud", "runyth-cycle-emotes"]);
+  assert.equal(left.children[0].attributes["data-module"], "runyth-cycle-portrait");
+});
+
+test("HUD: repeated renders with the HUD root still present stay idempotent", async () => {
+  const { root, right, app } = hudEnvironment({ portrait: "runyth-cycle-portrait", token: "runyth-cycle-token" });
+  right.appendChild(makeTokenHudButton());
+  right.appendChild(makePortraitHudButton());
+  await api.renderTokenHUD(app, root);
+  const first = emoteHudControl(right);
+  await api.renderTokenHUD(app, root);
+  await flushRenderQueue();
+  assert.equal(emoteHudControl(right), first);
+  assert.deepEqual(classesByKey(right), ["runyth-cycle-token-hud", "runyth-cycle-portrait", "runyth-cycle-emotes"]);
 });
