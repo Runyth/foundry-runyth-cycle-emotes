@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 — 2026-11-03
+
+- The 🎭 emoji on the Token HUD button is properly centered in its control
+  again: the control lays its content out with flex aligning and centering,
+  and the emoji renders at its natural size as a plain inline-block glyph
+  with a single line height, matching the Runyth Cycle Token HUD control
+  pattern. Nothing else on the HUD movement or the emote selector changed.
+
 ## 1.0.2 — 2026-11-02
 
 - The section in **Prototype Token Configuration → Appearance** now reads

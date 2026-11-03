@@ -11,7 +11,7 @@ import { build } from "./build.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const MODULE_ID = "runyth-cycle-emotes";
-const VERSION = "1.0.2";
+const VERSION = "1.0.3";
 
 function fail(message) {
   process.stderr.write(`Verification failed: ${message}\n`);
