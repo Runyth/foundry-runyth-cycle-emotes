@@ -1,6 +1,6 @@
 {
   "name": "runyth-cycle-emotes",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "type": "module",
   "description": "Development checks for Runyth Cycle Emotes, which adds an emoji button to the Token HUD for GM-configured wildcard emote image paths and posts the chosen image as a public chat message.",

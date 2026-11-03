@@ -13,7 +13,12 @@ targeting **Foundry VTT v13**.
 ## Features
 
 - Adds a **🎭 emoji button** to the Token HUD when the selected actor has emote images
-  configured.
+  configured. When **Runyth Cycle Portrait** is installed and active the button sits
+  directly below the Runyth Cycle Portrait control; when only **Runyth Cycle Token**
+  is installed and active it sits directly below the Runyth Cycle Token control;
+  with all three modules active the HUD order is Runyth Cycle Token, Runyth Cycle
+  Portrait, Runyth Cycle Emote. Buttons are recognised by their module ids, so the
+  order holds regardless of module load order.
 - Clicking the emoji opens a thumbnail grid of the configured images.
 - Clicking a thumbnail posts **only that image** as a normal public Chat Message visible
   to all connected players and the Game Master.

@@ -2,7 +2,7 @@
   "id": "runyth-cycle-emotes",
   "title": "Runyth Cycle Emotes",
   "description": "Adds an emoji button to the Token HUD. Each actor can use a GM-configured wildcard emote-image path; selecting an emote posts it publicly to chat without changing token or actor artwork.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -35,6 +35,6 @@
   "readme": "README.md",
   "url": "https://github.com/Runyth/foundry-runyth-cycle-emotes",
   "manifest": "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/latest/download/module.json",
-  "download": "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/download/v1.0.3/runyth-cycle-emotes-v1.0.3-mod.zip",
+  "download": "https://github.com/Runyth/foundry-runyth-cycle-emotes/releases/download/v1.0.4/runyth-cycle-emotes-v1.0.4-mod.zip",
   "changelog": "CHANGELOG.md"
 }

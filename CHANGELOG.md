@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.4 — 2026-11-03
+
+- The 🎭 Token HUD button is now placed among the Runyth cycle family by module
+  id, never by guessing: when Runyth Cycle Portrait is installed and active on
+  the world it sits directly below the Runyth Cycle Portrait control; when only
+  Runyth Cycle Token is installed and active it sits directly below the Runyth
+  Cycle Token control; with neither, its place is unchanged. With all three
+  modules active the HUD order is Runyth Cycle Token, Runyth Cycle Portrait,
+  Runyth Cycle Emote, whatever the module load order is.
+- Sibling controls are recognised through their module-id-derived markers (the
+  `runyth-cycle-token-hud` control class and Portrait's `data-module` control
+  attribute). Only the emote control is ever moved, and only within its own HUD
+  column; a bounded reconciliation after the render dispatch and a bounded
+  observer for later rerenders keep the place stable.
+- Behaviour is otherwise unchanged: the emote selector, public chat posting,
+  the campaign Appearance-section placement below Runyth Cycle Token, cached
+  image fallback and the guarantee that token and actor artwork are never
+  rewritten.
+
 ## 1.0.3 — 2026-11-03
 
 - The 🎭 emoji on the Token HUD button is properly centered in its control
