@@ -290,6 +290,66 @@ async function renderPrototypeTokenConfig(config, html) {
   await refresh();
 }
 
+/**
+ * Keep this control ordered beside the Runyth cycle family deterministically:
+ * directly below the Runyth Cycle Portrait control when that module is active
+ * and rendered, otherwise directly below the Runyth Cycle Token control, and
+ * independently appended when neither is present. Siblings are located by their
+ * module-id-derived markers, never by artwork or guesswork; only our own
+ * control is ever moved, and only within its own column.
+ */
+const CYCLE_PORTRAIT_ID = "runyth-cycle-portrait";
+const CYCLE_TOKEN_ID = "runyth-cycle-token";
+const PORTRAIT_CONTROL = '[data-module="' + CYCLE_PORTRAIT_ID + '"]';
+const TOKEN_CONTROL = "button." + CYCLE_TOKEN_ID + "-hud";
+
+function placeBelowCycleSiblings(right, control) {
+  if (!right || !control) return;
+  const modules = globalThis.game?.modules;
+  const portraits = modules?.get?.(CYCLE_PORTRAIT_ID)?.active
+    ? right.querySelector(PORTRAIT_CONTROL)
+    : null;
+  const tokenControl = modules?.get?.(CYCLE_TOKEN_ID)?.active
+    ? right.querySelector(TOKEN_CONTROL)
+    : null;
+  const anchor = portraits ?? tokenControl;
+  if (!anchor || anchor === control || anchor.parentElement !== control.parentElement) return;
+  if (anchor.nextElementSibling === control) return;
+  anchor.insertAdjacentElement("afterend", control);
+}
+
+let hudObserver = null;
+let observedRight = null;
+let observedControl = null;
+
+function stopHudOrdering() {
+  if (hudObserver?.disconnect) hudObserver.disconnect();
+  hudObserver = null;
+  observedRight = null;
+  observedControl = null;
+}
+
+function trackHudOrdering(right, control) {
+  if (observedRight === right && observedControl === control && hudObserver) {
+    placeBelowCycleSiblings(right, control);
+    return;
+  }
+  stopHudOrdering();
+  observedRight = right;
+  observedControl = control;
+  placeBelowCycleSiblings(right, control);
+  if (typeof globalThis.MutationObserver === "function") {
+    hudObserver = new globalThis.MutationObserver(() => {
+      if (observedRight === right && observedControl === control && right.contains(control)) {
+        placeBelowCycleSiblings(right, control);
+      } else {
+        stopHudOrdering();
+      }
+    });
+    hudObserver.observe(right, { childList: true, subtree: true });
+  }
+}
+
 async function renderTokenHUD(app, html) {
   const root = getRootElement(html);
   if (!root || root.querySelector('[data-action="rce-selector"]')) return;
@@ -311,6 +371,11 @@ async function renderTokenHUD(app, html) {
   const control = right.querySelector('[data-action="rce-selector"]');
   const selector = control?.querySelector(".rce-selector-wrap");
   if (!control || !selector) return;
+  control.dataset.module = MODULE_ID;
+  const reconcile = () => placeBelowCycleSiblings(right, control);
+  reconcile();
+  globalThis.queueMicrotask?.(reconcile);
+  trackHudOrdering(right, control);
 
   control.addEventListener("click", (event) => {
     if (event.target?.closest?.(".rce-image-button")) return;
@@ -342,6 +407,7 @@ function registerHooks() {
     console.log(`${MODULE_ID} | Initializing`);
     Hooks.on("renderPrototypeTokenConfig", renderPrototypeTokenConfig);
     Hooks.on("renderTokenHUD", renderTokenHUD);
+    Hooks.on("canvasTearDown", stopHudOrdering);
   });
 }
 
