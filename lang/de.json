@@ -1,17 +1,17 @@
 {
-  "RCE.Title": "Emotes",
-  "RCE.ConfigLegend": "Runyth Cycle Emote",
-  "RCE.PatternLabel": "Emote-Bild-Wildcard-Pfad",
-  "RCE.PatternHint": "Wähle einen Ordner oder trage einen Wildcard-Pfad wie tokens/emotes/Held_* ein. Nur passende Bilddateien erscheinen im Auswahlmenü von Runyth Cycle Emote. Token- und Charakterbild werden niemals verändert.",
-  "RCE.PatternPlaceholder": "tokens/emotes/Held_*",
+  "RCE.BrowseDeniedCache": "Die Live-Dateisuche ist nicht verfügbar; die vom Spielleiter gespeicherte Bildliste wird verwendet.",
+  "RCE.ChatAlt": "Emote von {name}",
   "RCE.ChooseFolder": "Bildordner auswählen",
-  "RCE.Refresh": "Bildliste aktualisieren",
+  "RCE.ConfigLegend": "Runyth Cycle Emote",
   "RCE.ImagesFound": "{count} passende(s) Bild(er) gefunden.",
   "RCE.NoImagesFound": "Keine passenden Bilder gefunden.",
-  "RCE.PathError": "Dieser Bildpfad konnte nicht gelesen werden. Prüfe Wildcard und Dateiberechtigungen.",
   "RCE.NoPattern": "Für diesen Charakter ist kein Emote-Bild-Pfad festgelegt.",
+  "RCE.PathError": "Dieser Bildpfad konnte nicht gelesen werden. Prüfe Wildcard und Dateiberechtigungen.",
+  "RCE.PatternHint": "Wähle einen Ordner oder trage einen Wildcard-Pfad wie tokens/emotes/Held_* ein. Nur passende Bilddateien erscheinen im Auswahlmenü von Runyth Cycle Emote. Token- und Charakterbild werden niemals verändert.",
+  "RCE.PatternLabel": "Emote-Bild-Wildcard-Pfad",
+  "RCE.PatternPlaceholder": "tokens/emotes/Held_*",
+  "RCE.PostError": "Das Bild konnte nicht in den Chat gesendet werden.",
+  "RCE.Refresh": "Bildliste aktualisieren",
   "RCE.SendToChat": "Emote in den Chat senden",
-  "RCE.ChatAlt": "Emote von {name}",
-  "RCE.BrowseDeniedCache": "Die Live-Dateisuche ist nicht verfügbar; die vom Spielleiter gespeicherte Bildliste wird verwendet.",
-  "RCE.PostError": "Das Bild konnte nicht in den Chat gesendet werden."
+  "RCE.Title": "Emotes"
 }
